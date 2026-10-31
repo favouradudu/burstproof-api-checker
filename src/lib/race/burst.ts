@@ -20,6 +20,11 @@ function headersObject(config: TestConfig): Record<string, string> {
 export async function runBurst(config: TestConfig): Promise<BurstRequestResult[]> {
   const headers = headersObject(config);
   const hasBody = config.method !== "GET" && config.body.trim().length > 0;
+  // Relative targets (the built-in mock endpoints) must be absolute for the proxy.
+  const absoluteUrl =
+    config.mode === "proxy" && !/^https?:\/\//i.test(config.url)
+      ? `${window.location.origin}${config.url}`
+      : config.url;
 
   const tasks = Array.from({ length: config.concurrency }, (_, i): Promise<BurstRequestResult> =>
     (async () => {

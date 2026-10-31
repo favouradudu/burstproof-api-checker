@@ -61,7 +61,10 @@ export const Route = createFileRoute("/api/public/proxy")({
         if (target.protocol !== "https:" && target.protocol !== "http:") {
           return Response.json({ error: "unsupported_protocol" }, { status: 400 });
         }
-        if (isBlockedHost(target.hostname)) {
+        if (
+          isBlockedHost(target.hostname) &&
+          target.hostname !== new URL(request.url).hostname // same-origin targets (built-in mocks) are safe
+        ) {
           return Response.json(
             { error: "blocked_host", message: "Local and private network addresses are not allowed." },
             { status: 400 },

@@ -21,8 +21,9 @@ import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { newIdempotencyKey, formatJson, validateRequestBody } from "@/lib/race/validation";
-import { mockModeOf, swapMockMode, type MockMode, type Preset } from "@/lib/race/presets";
+import { PRESETS, mockModeOf, swapMockMode, type MockMode } from "@/lib/race/presets";
 import type { HttpMethod, TestConfig } from "@/lib/race/types";
+
 
 const METHODS: HttpMethod[] = ["POST", "PUT", "PATCH", "GET"];
 
@@ -126,12 +127,7 @@ export function ConfigPanel({
       <div className="flex flex-col gap-2">
         <SectionLabel>Quick presets</SectionLabel>
         <div className="grid grid-cols-2 gap-2">
-          {[
-            { id: "checkout", label: "E-commerce Checkout", blurb: "Duplicate charges" },
-            { id: "coupon", label: "Coupon Claim", blurb: "Claimed twice" },
-            { id: "wallet", label: "Wallet Transfer", blurb: "Retry double debit" },
-            { id: "counter", label: "Counter Increment", blurb: "Lost updates" },
-          ].map((preset) => (
+          {PRESETS.map((preset) => (
             <Button
               key={preset.id}
               variant="outline"
@@ -139,16 +135,7 @@ export function ConfigPanel({
                 "h-auto flex-col items-start gap-0.5 px-3 py-2 text-left " +
                 (activePresetId === preset.id ? "border-primary/60 bg-primary/10" : "")
               }
-              onClick={() => {
-                const match = ["checkout", "coupon", "wallet", "counter"].includes(preset.id)
-                  ? ({
-                      id: preset.id,
-                      label: preset.label,
-                      blurb: preset.blurb,
-                    } as Preset)
-                  : null;
-                void match;
-              }}
+              onClick={() => onPresetSelect(preset)}
             >
               <span className="text-xs font-medium">{preset.label}</span>
               <span className="text-[10px] text-muted-foreground">{preset.blurb}</span>

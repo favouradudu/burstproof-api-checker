@@ -21,7 +21,7 @@ import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { newIdempotencyKey, formatJson, validateRequestBody } from "@/lib/race/validation";
-import { PRESETS, mockModeOf, swapMockMode, type MockMode } from "@/lib/race/presets";
+import { PRESETS, mockModeOf, swapMockMode, type MockMode, type Preset } from "@/lib/race/presets";
 import type { HttpMethod, TestConfig } from "@/lib/race/types";
 
 

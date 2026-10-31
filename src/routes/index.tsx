@@ -24,8 +24,8 @@ function presetToConfig(preset: Preset): TestConfig {
 }
 
 function Index() {
-  const [config, setConfig] = useState<TestConfig>(() => presetToConfig(PRESETS[0]));
-  const [activePresetId, setActivePresetId] = useState<string | null>(PRESETS[0].id);
+  const [config, setConfig] = useState<TestConfig>(() => presetToConfig(PRESETS[0]!));
+  const [activePresetId, setActivePresetId] = useState<string | null>(PRESETS[0]!.id);
   const [results, setResults] = useState<BurstRequestResult[] | null>(null);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [running, setRunning] = useState(false);

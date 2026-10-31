@@ -50,43 +50,44 @@ export async function runBurst(config: TestConfig): Promise<BurstRequestResult[]
           body = payload.body ?? "";
           error = payload.error;
         } else {
-          const res = await fetch(config.url, {
-            method: config.method,
-            headers,
-            body: hasBody ? config.body : undefined,
-          });
+          const init: RequestInit = { method: config.method, headers };
+          if (hasBody) init.body = config.body;
+          const res = await fetch(config.url, init);
           status = res.status;
           body = (await res.text()).slice(0, MAX_EXPORT_BODY * 4);
         }
 
         const receivedAt = Date.now();
-        return {
+        const result: BurstRequestResult = {
           index: i + 1,
           dispatchAt,
           receivedAt,
           durationMs: Math.round(performance.now() - t0),
           status,
           body,
-          error,
           viaProxy: config.mode === "proxy",
         };
+        if (error !== undefined) result.error = error;
+        return result;
       } catch (thrown) {
         const receivedAt = Date.now();
-        return {
+        const message =
+          thrown instanceof Error
+            ? thrown.message === "Failed to fetch"
+              ? "Blocked — likely by browser CORS policy"
+              : thrown.message
+            : "Request failed";
+        const result: BurstRequestResult = {
           index: i + 1,
           dispatchAt,
           receivedAt,
           durationMs: Math.round(performance.now() - t0),
           status: null,
           body: "",
-          error:
-            thrown instanceof Error
-              ? thrown.message === "Failed to fetch"
-                ? "Blocked — likely by browser CORS policy"
-                : thrown.message
-              : "Request failed",
+          error: message,
           viaProxy: config.mode === "proxy",
         };
+        return result;
       }
     })(),
   );

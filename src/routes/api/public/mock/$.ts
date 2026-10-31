@@ -135,7 +135,7 @@ export const Route = createFileRoute("/api/public/mock/$")({
           // independently, producing its own resource id / worker value.
           const payload = createdPayload(scenario, freshId(ID_PREFIX[scenario]), bodyText);
           if (scenario === "counter") {
-            payload.note =
+            payload["note"] =
               "Lost update: every concurrent request read the same base value and wrote its own — increments were silently dropped.";
           }
           return Response.json({ ...payload, _demo: "vulnerable — no protection" }, { status: 200 });

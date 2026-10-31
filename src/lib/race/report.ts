@@ -1,5 +1,8 @@
 import type { BurstRequestResult, TestConfig, Verdict } from "./types";
 
+const MAX_EXPORT_BODY = 2000;
+
+
 // Headers can contain credentials — never export their values.
 function redactConfig(config: TestConfig) {
   return {
@@ -114,4 +117,3 @@ export function buildJsonReport(
   );
 }
 
-const MAX_EXPORT_BODY = 2000;

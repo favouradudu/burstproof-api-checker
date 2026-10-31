@@ -28,19 +28,6 @@ function isBlockedHost(hostname: string): boolean {
 
 const HOP_BY_HOP = new Set(["host", "content-length", "connection", "keep-alive", "transfer-encoding"]);
 
-type ProxyEnvelope = {
-  status: number | null;
-  body: string;
-  truncated: boolean;
-  dispatchAt: number;
-  receivedAt: number;
-  durationMs: number;
-  error?: string;
-};
-
-function envelope(payload: ProxyEnvelope, t0: number): Response {
-  return Response.json({ ...payload, durationMs: payload.durationMs ?? Date.now() - t0 });
-}
 
 export const Route = createFileRoute("/api/public/proxy")({
   server: {

@@ -41,7 +41,7 @@ export async function runBurst(config: TestConfig): Promise<BurstRequestResult[]
             headers: { "content-type": "application/json" },
             body: JSON.stringify({
               method: config.method,
-              url: config.url,
+              url: absoluteUrl,
               headers,
               body: hasBody ? config.body : undefined,
             }),

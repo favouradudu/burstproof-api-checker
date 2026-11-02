@@ -9,6 +9,14 @@ function headersObject(config: TestConfig): Record<string, string> {
     if (!key) continue;
     out[key] = header.value;
   }
+  // The Idempotency-Key toggle owns its header: strip any configured value,
+  // then re-add one shared key across the whole burst when enabled.
+  for (const key of Object.keys(out)) {
+    if (key.toLowerCase() === "idempotency-key") delete out[key];
+  }
+  if (config.idempotency === "shared" && config.idempotencyKey?.trim()) {
+    out["Idempotency-Key"] = config.idempotencyKey.trim();
+  }
   return out;
 }
 

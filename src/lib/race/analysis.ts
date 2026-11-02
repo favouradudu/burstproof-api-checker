@@ -197,7 +197,9 @@ export function analyzeBurst(
       `${plural(successes.length, "request")} returned 2xx where idempotent behaviour allows at most one`,
       uniqueIds.length > 1
         ? `${plural(uniqueIds.length, "distinct ID")} created in the same burst: ${uniqueIds.slice(0, 5).join(", ")}${uniqueIds.length > 5 ? " …" : ""}`
-        : "Success responses differ, so independent state changes occurred",
+        : allIdentical
+          ? `All ${successes.length} success bodies were byte-identical, but this target reports fresh state per call — read as repeated processing, not deduplication`
+          : "Success responses differ, so independent state changes occurred",
       `All successful writes completed within ${spread}ms — a genuine concurrent window, not sequential retries`,
     ],
   };

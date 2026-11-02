@@ -18,6 +18,7 @@ import { CodeBlock } from "./code-block";
 import { categorize } from "@/lib/race/analysis";
 import { REMEDIATIONS } from "@/lib/race/remediation";
 import { buildJsonReport, buildMarkdownReport } from "@/lib/race/report";
+import { buildCiWorkflow, buildCurlScript } from "@/lib/race/export-scripts";
 import type { BurstRequestResult, OutcomeCategory, TestConfig, Verdict } from "@/lib/race/types";
 
 function statusBadge(status: number | null): { label: string; className: string } {
@@ -306,10 +307,11 @@ export function ResultsView({ config, results, verdict, running }: ResultsViewPr
       <Card className="border-border bg-card/60">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <FileText className="size-4 text-primary" /> Export report
+            <FileText className="size-4 text-primary" /> Export &amp; share
           </CardTitle>
           <p className="text-xs text-muted-foreground">
-            Shareable Markdown / JSON — auth headers are never included in exports.
+            Reports, a copy-paste cURL burst and a CI workflow that match this run — secret header
+            values are always redacted.
           </p>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
@@ -333,7 +335,23 @@ export function ResultsView({ config, results, verdict, running }: ResultsViewPr
             variant="outline"
             size="sm"
             className="font-mono text-xs"
-            onClick={() => downloadReport("race-condition-report.md", markdown, "text/markdown")}
+            onClick={() => copyReport(buildCurlScript(config), "cURL burst script")}
+          >
+            <Copy className="size-3.5" /> Copy cURL
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="font-mono text-xs"
+            onClick={() => copyReport(buildCiWorkflow(config), "GitHub Actions workflow")}
+          >
+            <Copy className="size-3.5" /> Copy CI
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="font-mono text-xs"
+            onClick={() => downloadReport("burstproof-report.md", markdown, "text/markdown")}
           >
             <Download className="size-3.5" /> .md
           </Button>
@@ -341,7 +359,7 @@ export function ResultsView({ config, results, verdict, running }: ResultsViewPr
             variant="outline"
             size="sm"
             className="font-mono text-xs"
-            onClick={() => downloadReport("race-condition-report.json", json, "application/json")}
+            onClick={() => downloadReport("burstproof-report.json", json, "application/json")}
           >
             <FileJson className="size-3.5" /> .json
           </Button>

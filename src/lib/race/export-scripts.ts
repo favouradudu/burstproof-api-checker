@@ -29,19 +29,18 @@ function requestArgs(config: TestConfig): RequestArgs {
     if (!key) continue;
     const lower = key.toLowerCase();
     if (lower === "content-type") hasContentType = true;
-    if (lower === "idempotency-key") {
-      // The Idempotency-Key toggle owns this header — mirror the configured mode.
-      if (config.idempotency === "shared" && config.idempotencyKey?.trim()) {
-        flags.push(`-H ${shellSingleQuoted(`Idempotency-Key: ${config.idempotencyKey.trim()}`)}`);
-      }
-      continue;
-    }
+    // The Idempotency-Key toggle owns this header — never emit a stale row.
+    if (lower === "idempotency-key") continue;
     if (SECRET_HEADER_KEYS.has(lower)) {
       flags.push(`-H "${key}: \${${AUTH_ENV_VAR}}"`);
       needsAuthEnv = true;
       continue;
     }
     flags.push(`-H ${shellSingleQuoted(`${key}: ${header.value}`)}`);
+  }
+
+  if (config.idempotency === "shared" && config.idempotencyKey?.trim()) {
+    flags.push(`-H ${shellSingleQuoted(`Idempotency-Key: ${config.idempotencyKey.trim()}`)}`);
   }
 
   const hasBody = config.method !== "GET" && config.body.trim().length > 0;

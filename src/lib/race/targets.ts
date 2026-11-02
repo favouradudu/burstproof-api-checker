@@ -21,7 +21,7 @@ export const PLAYGROUND_TARGETS: PlaygroundTarget[] = [
   {
     id: "jsonplaceholder-create",
     label: "JSONPlaceholder",
-    blurb: "POST /posts — sandbox CRUD",
+    blurb: "Sandbox · POST /posts",
     note: "This sandbox fakes persistence: every POST returns 201 with the same dummy id, so you get a guaranteed multi-success burst read as independent writes (no dedup).",
     method: "POST",
     url: "https://jsonplaceholder.typicode.com/posts",
@@ -36,7 +36,7 @@ export const PLAYGROUND_TARGETS: PlaygroundTarget[] = [
   {
     id: "httpbin-echo",
     label: "httpbin echo",
-    blurb: "POST /post — echoes payload",
+    blurb: "Echo · POST /post",
     note: "Echo server: every request is answered with your payload back. Identical bodies are inherent to an echo — use it to confirm all N requests actually land and to read real latencies.",
     method: "POST",
     url: "https://httpbin.org/post",
@@ -47,7 +47,7 @@ export const PLAYGROUND_TARGETS: PlaygroundTarget[] = [
   {
     id: "httpbin-uuid",
     label: "httpbin uuid",
-    blurb: "GET /uuid — fresh per call",
+    blurb: "UUID · GET /uuid",
     note: "Mints a fresh UUID per call, so every success carries a distinct resource ID — expected for this endpoint, but handy to watch distinct-ID detection live.",
     method: "GET",
     url: "https://httpbin.org/uuid",

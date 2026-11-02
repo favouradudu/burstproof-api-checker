@@ -4,11 +4,12 @@ import { Github, MousePointerClick, Network, Timer, Workflow } from "lucide-reac
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ConfigPanel } from "@/components/idempotent/config-panel";
-import { ResultsView } from "@/components/idempotent/results-view";
+import { ConfigPanel } from "@/components/burstproof/config-panel";
+import { ResultsView } from "@/components/burstproof/results-view";
 import { analyzeBurst } from "@/lib/race/analysis";
 import { runBurst } from "@/lib/race/burst";
 import { PRESETS, type Preset } from "@/lib/race/presets";
+import { identicalMeansDedupFor, playgroundToConfig } from "@/lib/race/targets";
 import { validateRequestBody } from "@/lib/race/validation";
 import type { BurstRequestResult, TestConfig, Verdict } from "@/lib/race/types";
 
@@ -20,6 +21,8 @@ function presetToConfig(preset: Preset): TestConfig {
     body: preset.body,
     concurrency: 10,
     mode: "proxy",
+    idempotency: "raw",
+    idempotencyKey: null,
   };
 }
 
@@ -55,9 +58,8 @@ function Index() {
     setVerdict(null);
     try {
       const burst = await runBurst(config);
-      const preset = PRESETS.find((p) => p.id === activePresetId);
       setResults(burst);
-      setVerdict(analyzeBurst(burst, { identicalMeansDedup: preset?.identicalMeansDedup ?? true }));
+      setVerdict(analyzeBurst(burst, { identicalMeansDedup: identicalMeansDedupFor(config) }));
     } finally {
       setRunning(false);
     }
@@ -69,7 +71,7 @@ function Index() {
       <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <a href="/" className="font-mono text-lg font-bold tracking-tight">
-            idempotent<span className="cursor-blink text-primary">▌</span>
+            burstproof<span className="cursor-blink text-primary">▌</span>
           </a>
           <div className="flex items-center gap-1.5">
             <a href="#how-it-works">
@@ -92,9 +94,9 @@ function Index() {
           variant="outline"
           className="border-primary/40 font-mono text-[11px] text-primary"
         >
-          $ ./concurrency-stress-test --burst
+          $ ./burstproof --burst
         </Badge>
-        <h1 className="mt-4 text-5xl font-bold tracking-tight sm:text-6xl">Idempotent</h1>
+        <h1 className="mt-4 text-5xl font-bold tracking-tight sm:text-6xl">Burstproof</h1>
         <p className="mt-3 max-w-2xl text-lg leading-relaxed text-muted-foreground">
           Test if your endpoints survive concurrent double-submits and race conditions.
         </p>
@@ -103,7 +105,7 @@ function Index() {
             { icon: Workflow, label: "Promise.all burst dispatch" },
             { icon: Timer, label: "millisecond timing" },
             { icon: Network, label: "CORS-safe proxy" },
-            { icon: MousePointerClick, label: "built-in demo targets" },
+            { icon: MousePointerClick, label: "live playground targets" },
           ].map(({ icon: Icon, label }) => (
             <span
               key={label}
@@ -132,7 +134,7 @@ function Index() {
       <section id="how-it-works" className="border-t border-border bg-card/30">
         <div className="mx-auto max-w-6xl px-4 py-14">
           <h2 className="font-mono text-sm uppercase tracking-widest text-muted-foreground">
-            $ man idempotent
+            $ man burstproof
           </h2>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             {[
@@ -166,7 +168,7 @@ function Index() {
 
       <footer className="border-t border-border py-6">
         <p className="text-center font-mono text-xs text-muted-foreground">
-          idempotent — concurrent double-submit tester · built for developers
+          burstproof — concurrent double-submit tester · built for developers
         </p>
       </footer>
     </div>
@@ -177,21 +179,21 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       {
-        title: "Idempotent — Race Condition & Concurrency Tester",
+        title: "Burstproof — API Race Condition & Concurrency Tester",
       },
       {
         name: "description",
         content:
-          "Fire simultaneous duplicate requests at any endpoint and find out if it survives concurrent double-submits. Built-in vulnerable and protected demo endpoints, millisecond waterfall, copyable fixes.",
+          "Fire simultaneous duplicate requests at any endpoint and find out if it survives concurrent double-submits. Live playground targets, idempotency-key mode, millisecond waterfall, cURL/CI exports.",
       },
       {
         property: "og:title",
-        content: "Idempotent — Race Condition & Concurrency Tester",
+        content: "Burstproof — API Race Condition & Concurrency Tester",
       },
       {
         property: "og:description",
         content:
-          "Stress-test any endpoint with simultaneous duplicate requests and get a plain-English verdict: idempotent or vulnerable to race conditions.",
+          "Stress-test any endpoint with simultaneous duplicate requests and get a plain-English verdict: race-safe or vulnerable to race conditions.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -80,13 +80,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Idempotent — Race Condition & Concurrency Tester" },
+      { title: "Burstproof — API Race Condition & Concurrency Tester" },
       {
         name: "description",
         content:
           "Test if your endpoints survive concurrent double-submits and race conditions.",
       },
-      { property: "og:title", content: "Idempotent — Race Condition & Concurrency Tester" },
+      { property: "og:title", content: "Burstproof — API Race Condition & Concurrency Tester" },
       {
         property: "og:description",
         content:

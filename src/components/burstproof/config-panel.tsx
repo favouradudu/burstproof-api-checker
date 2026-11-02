@@ -221,6 +221,29 @@ export function ConfigPanel({
             </div>
           </div>
         ) : null}
+
+        {playground ? <p className="text-[11px] leading-relaxed text-muted-foreground">{playground.note}</p> : null}
+      </div>
+
+      {/* Live playground targets */}
+      <div className="flex flex-col gap-2">
+        <SectionLabel>Live playground targets</SectionLabel>
+        <div className="grid grid-cols-3 gap-2">
+          {PLAYGROUND_TARGETS.map((target) => (
+            <Button
+              key={target.id}
+              variant="outline"
+              className={
+                "h-auto flex-col items-start gap-0.5 px-2 py-2 text-left " +
+                (playground?.id === target.id ? "border-primary/60 bg-primary/10" : "")
+              }
+              onClick={() => patch(playgroundToConfig(target, config))}
+            >
+              <span className="text-xs font-medium leading-tight">{target.label}</span>
+              <span className="text-[10px] leading-tight text-muted-foreground">{target.blurb}</span>
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* Headers */}
@@ -320,6 +343,56 @@ export function ConfigPanel({
             </Button>
           </TabsContent>
         </Tabs>
+      </div>
+
+      {/* Idempotency-Key mode */}
+      <div className="flex flex-col gap-2">
+        <SectionLabel>Idempotency-Key mode</SectionLabel>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          {(
+            [
+              {
+                mode: "raw" as IdempotencyMode,
+                title: "Raw — no key",
+                blurb: "Strips any Idempotency-Key. Tests the endpoint's own protection: locks, unique constraints, natural keys.",
+              },
+              {
+                mode: "shared" as IdempotencyMode,
+                title: "Shared UUID key",
+                blurb: "One key on every request in the burst. Tests whether the endpoint actually honours idempotency tokens.",
+              },
+            ] as const
+          ).map(({ mode, title, blurb }) => (
+            <button
+              key={mode}
+              onClick={() => setIdempotencyMode(mode)}
+              className={
+                "rounded-lg border p-2.5 text-left transition-colors " +
+                (config.idempotency === mode
+                  ? "border-primary/60 bg-primary/10"
+                  : "border-border hover:bg-muted/40")
+              }
+            >
+              <p className="text-xs font-medium">{title}</p>
+              <p className="mt-0.5 text-[10px] leading-snug text-muted-foreground">{blurb}</p>
+            </button>
+          ))}
+        </div>
+        {config.idempotency === "shared" && config.idempotencyKey ? (
+          <div className="flex items-center gap-2 rounded-lg border border-dashed border-border bg-muted/20 px-3 py-2">
+            <span className="truncate font-mono text-[11px] text-muted-foreground" title={config.idempotencyKey}>
+              {config.idempotencyKey}
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-auto h-6 shrink-0 px-2 font-mono text-[11px] text-muted-foreground"
+              onClick={() => patch({ idempotencyKey: newIdempotencyKey() })}
+            >
+              <Wand2 className="size-3" /> Regenerate
+            </Button>
+          </div>
+        ) : null}
       </div>
 
       {/* Body */}

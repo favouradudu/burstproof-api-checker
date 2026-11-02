@@ -11,5 +11,5 @@
 
 ## Architecture
 
-- Race-test engine lives in `src/lib/race/` as pure, testable modules (verdict analysis, burst dispatcher, report exporters, presets); UI consumes it from `src/components/idempotent/`.
+- Race-test engine lives in `src/lib/race/` as pure, testable modules (verdict analysis, burst dispatcher, report exporters, export-script generators, playground targets, presets); UI consumes it from `src/components/burstproof/`.
 - Outbound proxied requests go through the `/api/public/proxy` server route (same-origin targets allowed, other private hosts blocked); built-in demo targets at `/api/public/mock/*` use in-memory state in `src/lib/mock-state.server.ts` — demo-only, never durable storage.

@@ -51,16 +51,18 @@ evidence to prove it.
 | **🧠 Plain-English analysis** | A one-glance verdict card — 🟢 *Protected* vs 🔴 *Vulnerable to Race Condition* — plus a step-by-step explanation of exactly why the race happened. |
 | **🔧 Copyable remediation patterns** | Working code snippets for the three industry-standard fixes: Postgres `SELECT … FOR UPDATE` row locks, Redis-backed `Idempotency-Key` middleware, and database unique constraints with `ON CONFLICT` handling. |
 | **📦 Zero-config presets** | Built-in demo mode with four realistic scenarios — E-commerce Checkout, Coupon Claim, Wallet Transfer, Counter Increment — each with a vulnerable and a protected mock endpoint, so you can see the tool work before wiring up your own API. |
-| **📤 Exportable audit reports** | Copy or download the full run as Markdown (paste straight into a GitHub issue or PR) or JSON (pipe into CI). Header values are redacted automatically so credentials never leak into exports. |
+| **🧩 One-click live playground targets** | Real public endpoints — JSONPlaceholder's duplicate-creating `POST /posts` sandbox and httpbin's echo / uuid endpoints — autofill with one click so anyone can run a genuine burst in seconds, no setup. |
+| **🔑 Idempotency-Key mode** | Toggle between sending a shared UUID `Idempotency-Key` on every request in the burst and sending raw requests with no key, to verify whether your endpoint actually honours idempotency tokens or relies on its own locks and constraints. |
+| **📤 Exportable reports & scripts** | Copy or download the run as Markdown (GitHub issue-ready) or JSON, plus a parallel bash **cURL burst** and a minimal **GitHub Actions workflow** that reproduce the exact configured burst size, endpoint and payload. Secret header values are redacted into an env var / CI secret automatically. |
 
 ## 🚀 Quickstart
 
 ### Live (no install)
 
 1. Open [burstproof-api-checker.lovable.app](https://burstproof-api-checker.lovable.app).
-2. Pick a preset — or paste your own target URL, method, headers, and JSON body.
+2. Pick a preset, click a **live playground target** (JSONPlaceholder or httpbin — real public endpoints), or paste your own URL, method, headers, and JSON body.
 3. Set the burst size (5–25) and hit **Run burst**.
-4. Read the verdict card and the waterfall, then export the Markdown report into your bug tracker.
+4. Read the verdict card and the waterfall, then export the Markdown report into your bug tracker — or the cURL burst / GitHub Actions workflow into your repo.
 
 > The bundled mock endpoints live under `/api/public/mock/*` and simulate vulnerable vs. protected
 > behaviour in-memory. Point the URL at `https://staging.yourcompany.com/api/checkout` and the same

@@ -2,6 +2,13 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH";
 
 export type DispatchMode = "proxy" | "direct";
 
+/**
+ * How the burst handles the Idempotency-Key header:
+ * - "raw" — no key is sent (any configured one is stripped)
+ * - "shared" — one UUID is sent on every request in the burst
+ */
+export type IdempotencyMode = "raw" | "shared";
+
 export type KeyValueHeader = { key: string; value: string };
 
 export type TestConfig = {
@@ -11,6 +18,8 @@ export type TestConfig = {
   body: string;
   concurrency: number;
   mode: DispatchMode;
+  idempotency: IdempotencyMode;
+  idempotencyKey: string | null;
 };
 
 export type BurstRequestResult = {

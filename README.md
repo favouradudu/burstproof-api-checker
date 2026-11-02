@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ Idempotent
+# ⚡ Burstproof
 
 **API Race Condition & Concurrency Stress-Tester**
 
@@ -37,7 +37,7 @@ check and the write are never interleaved. Integration tests hit the endpoint se
 only exists **when two requests arrive in the same millisecond** — exactly what happens when a user
 double-clicks "Pay", a payment webhook retries, or a flaky mobile client resubmits.
 
-Idempotent fires a real, simultaneous burst at your endpoint and reads the aftermath: if multiple
+Burstproof fires a real, simultaneous burst at your endpoint and reads the aftermath: if multiple
 requests all succeeded and changed state independently, you have a race condition — with the
 evidence to prove it.
 
@@ -48,7 +48,7 @@ evidence to prove it.
 | **⏱️ Millisecond burst dispatch** | Fires 5–25 requests truly simultaneously via `Promise.all()`, timestamping each dispatch and receipt to the millisecond. |
 | **🛡️ CORS-safe server proxy** | Audits any public staging or production API through a server-side proxy — no browser CORS headaches, and optional direct-browser dispatch when you want to test the client path. |
 | **🌊 Interactive request waterfall** | Timeline of every request in the burst: per-request latency, HTTP status badges (`200`, `201`, `409`, `429`, `500`), and expandable response payloads. |
-| **🧠 Plain-English analysis** | A one-glance verdict card — 🟢 *Idempotent / Protected* vs 🔴 *Vulnerable to Race Condition* — plus a step-by-step explanation of exactly why the race happened. |
+| **🧠 Plain-English analysis** | A one-glance verdict card — 🟢 *Protected* vs 🔴 *Vulnerable to Race Condition* — plus a step-by-step explanation of exactly why the race happened. |
 | **🔧 Copyable remediation patterns** | Working code snippets for the three industry-standard fixes: Postgres `SELECT … FOR UPDATE` row locks, Redis-backed `Idempotency-Key` middleware, and database unique constraints with `ON CONFLICT` handling. |
 | **📦 Zero-config presets** | Built-in demo mode with four realistic scenarios — E-commerce Checkout, Coupon Claim, Wallet Transfer, Counter Increment — each with a vulnerable and a protected mock endpoint, so you can see the tool work before wiring up your own API. |
 | **📤 Exportable audit reports** | Copy or download the full run as Markdown (paste straight into a GitHub issue or PR) or JSON (pipe into CI). Header values are redacted automatically so credentials never leak into exports. |
@@ -91,7 +91,7 @@ Burst size:  10
 
 Read the verdict before you interpret results:
 
-- **🟢 Idempotent / Protected** — one state change (or one success plus `409`/`429`/identical
+- **🟢 Protected** — one state change (or one success plus `409`/`429`/identical
   deduplicated responses). Your endpoint survives double-submits.
 - **🔴 Vulnerable** — multiple `200`/`201` responses with differing IDs or state changes inside the
   same burst window. Ship the fix before the users find it.
@@ -109,7 +109,7 @@ Read the verdict before you interpret results:
   blocked.
 - **Built-in mocks** — `src/routes/api/public/mock/$.ts` + `src/lib/mock-state.server.ts` serve the
   vulnerable/protected demo endpoints from in-memory state. Demo-only, never durable storage.
-- **UI** — `src/components/idempotent/` renders the config panel, waterfall, verdict card, and
+- **UI** — `src/components/burstproof/` renders the config panel, waterfall, verdict card, and
   remediation snippets, consuming the engine modules directly.
 
 ## 🛠️ Tech Stack

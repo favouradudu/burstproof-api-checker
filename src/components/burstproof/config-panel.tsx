@@ -22,7 +22,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { newIdempotencyKey, formatJson, validateRequestBody } from "@/lib/race/validation";
 import { PRESETS, mockModeOf, swapMockMode, type MockMode, type Preset } from "@/lib/race/presets";
-import type { HttpMethod, TestConfig } from "@/lib/race/types";
+import {
+  PLAYGROUND_TARGETS,
+  activePlaygroundTarget,
+  playgroundToConfig,
+} from "@/lib/race/targets";
+import type { HttpMethod, IdempotencyMode, TestConfig } from "@/lib/race/types";
 
 
 const METHODS: HttpMethod[] = ["POST", "PUT", "PATCH", "GET"];
@@ -58,8 +63,21 @@ export function ConfigPanel({
 
   const bodyError = useMemo(() => validateRequestBody(config.body, config.method), [config.body, config.method]);
   const mockMode = mockModeOf(config.url);
+  const playground = activePlaygroundTarget(config);
 
   const patch = (partial: Partial<TestConfig>) => onChange({ ...config, ...partial });
+
+  function setIdempotencyMode(mode: IdempotencyMode) {
+    if (mode === "shared") {
+      patch({
+        idempotency: "shared",
+        idempotencyKey: config.idempotencyKey ?? newIdempotencyKey(),
+      });
+      setHeadersTab("kv");
+      return;
+    }
+    patch({ idempotency: "raw" });
+  }
 
   function setHeader(index: number, field: "key" | "value", value: string) {
     patch({
@@ -86,7 +104,12 @@ export function ConfigPanel({
     }
     if (kind === "content-type") addHeader("Content-Type", "application/json");
     if (kind === "auth") addHeader("Authorization", "Bearer ");
-    if (kind === "idempotency") addHeader("Idempotency-Key", newIdempotencyKey());
+    if (kind === "idempotency") {
+      setIdempotencyMode("shared");
+      setHeadersTab("kv");
+      toast.info("Shared key mode enabled — one Idempotency-Key on every request in the burst");
+      return;
+    }
     setHeadersTab("kv");
   }
 

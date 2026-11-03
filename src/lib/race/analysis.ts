@@ -99,7 +99,7 @@ export function analyzeBurst(
         emoji: "🟢",
         summary: `No state was changed more than once: ${plural(conflicts, "duplicate")} were turned away with ${conflicts === 1 ? "a" : ""} 409/429 response${conflicts === 1 ? "" : "s"}.`,
         detail:
-          "The endpoint refused every concurrent duplicate with a conflict (409) or rate-limit (429) response instead of processing it. However the guard is implemented — a lock, a unique constraint, an idempotency key — it held up under the burst: exactly one caller (or nobody, if the resource already existed) got through.",
+          "The endpoint refused every concurrent duplicate with a conflict (409) or rate-limit (429) response instead of processing it. The guard — a lock, a unique constraint, or an idempotency key — held under the burst: exactly one caller (or none, if the resource already existed) got through.",
         reasons: [
           `0 of ${results.length} requests produced a 2xx success`,
           `${plural(conflicts, "request")} returned 409/429, signalling the server detected the duplicate`,
@@ -130,7 +130,7 @@ export function analyzeBurst(
         emoji: "🟡",
         summary: `Only one request succeeded; the other ${serverErrors} crashed with 5xx responses.`,
         detail:
-          "A wave of 500s under concurrency points at unstable error handling rather than a clean verdict. Fix the crash first, then rerun: errors that abort mid-write can mask or mimic race conditions.",
+          "A wave of 500s under concurrency indicates unstable error handling rather than a clean verdict. Fix the crash and rerun — errors that abort mid-write can mask or mimic race conditions.",
         reasons: [
           "1 success but " + plural(serverErrors, "request") + " returned 5xx",
           "Mass failures hide the real concurrency behaviour",
@@ -145,7 +145,7 @@ export function analyzeBurst(
       emoji: "🟢",
       summary: `Exactly one request changed state; the other ${rest} ${rest === 1 ? "was" : "were"} handled as conflicts, rejections or duplicates.`,
       detail:
-        "Under a simultaneous burst the server allowed a single state change and dealt with the duplicates deterministically — via 409 Conflict, 429 rate limiting, or by returning one canonical result. This is what well-behaved write endpoints look like: safe to retry, safe to double-click, safe behind flaky networks.",
+        "Under a simultaneous burst the server allowed a single state change and handled the duplicates deterministically — via 409 Conflict, 429 rate limiting, or by returning one canonical result. Retries and duplicate submissions are safe.",
       reasons: [
         `${plural(successes.length, "success")} 2xx response`,
         conflicts > 0 ? `${plural(conflicts, "request")} rejected with 409/429` : null,
@@ -174,7 +174,7 @@ export function analyzeBurst(
       emoji: "🟢",
       summary: `All ${successes.length} concurrent duplicates got byte-identical responses for the same resource.`,
       detail:
-        "The server collapsed the burst onto one shared result: every request returned the same payload, which is the signature of deduplication (idempotency keys, request hashing or single-flight caching). Each duplicate was answered as a replay of the first instead of being processed independently.",
+        "The server collapsed the burst onto one shared result: every request returned the same payload, consistent with deduplication via idempotency keys, request hashing or single-flight caching. Each duplicate was answered as a replay of the first instead of being processed independently.",
       reasons: [
         `${plural(successes.length, "request")} succeeded, but every response body was identical`,
         `Responses arrived within ${spread}ms of each other — one canonical result, not independent writes`,
@@ -192,7 +192,7 @@ export function analyzeBurst(
     emoji: "🔴",
     summary: `${plural(successes.length, "request")} succeeded with ${plural(uniqueIds.length || successes.length, "distinct resource ID", "s")} inside a ${spread}ms window — every duplicate was processed as its own write.`,
     detail:
-      "Your endpoint accepted simultaneous duplicate submissions and processed each one independently. Every request ran its read → validate → write sequence without coordination, so each one saw \"no existing record\" at check time and created its own resource — a classic TOCTOU (time-of-check to time-of-use) race. In production this means double charges, duplicate orders, double-spent coupons or lost counter updates whenever users double-click, retry on a timeout, or a webhook fires twice.",
+      "The endpoint accepted simultaneous duplicate submissions and processed each one independently. Every request ran its read → validate → write sequence without coordination, so each one saw \"no existing record\" at check time and created its own resource — a TOCTOU (time-of-check to time-of-use) race. In production this means double charges, duplicate orders, double-spent coupons or lost counter updates when a user double-clicks, a client retries, or a webhook fires twice.",
     reasons: [
       `${plural(successes.length, "request")} returned 2xx where idempotent behaviour allows at most one`,
       uniqueIds.length > 1

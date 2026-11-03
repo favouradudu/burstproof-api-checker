@@ -427,7 +427,7 @@ export function ConfigPanel({
               <AlertCircle className="size-3.5" /> {bodyError}
             </p>
           ) : (
-            <p className="text-xs text-muted-foreground">Valid JSON — validated live as you type.</p>
+            <p className="text-xs text-muted-foreground">Valid JSON.</p>
           )}
         </div>
       ) : (
@@ -503,7 +503,7 @@ export function ConfigPanel({
           : `Run burst — ${config.concurrency} simultaneous requests`}
       </Button>
       <Label className="text-center text-[11px] font-normal text-muted-foreground">
-        All {config.concurrency} requests fire in a single Promise.all tick — no queueing, no delay.
+        All {config.concurrency} requests fire in a single Promise.all tick.
       </Label>
     </div>
   );

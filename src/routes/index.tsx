@@ -79,7 +79,7 @@ function Index() {
                 How it works
               </Button>
             </a>
-            <a href="https://github.com" target="_blank" rel="noreferrer">
+            <a href="https://github.com/favouradudu/burstproof-api-checker" target="_blank" rel="noreferrer">
               <Button variant="outline" size="sm" className="font-mono text-xs">
                 <Github className="size-3.5" /> GitHub
               </Button>
@@ -168,7 +168,7 @@ function Index() {
 
       <footer className="border-t border-border py-6">
         <p className="text-center font-mono text-xs text-muted-foreground">
-          burstproof — concurrent double-submit tester · built for developers
+          burstproof — concurrent double-submit tester
         </p>
       </footer>
     </div>

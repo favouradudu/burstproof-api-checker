@@ -152,7 +152,7 @@ type ResultsViewProps = {
 async function copyReport(text: string, label: string) {
   try {
     await navigator.clipboard.writeText(text);
-    toast.success(`${label} copied — paste it into a GitHub issue or PR`);
+    toast.success(`${label} copied`);
   } catch {
     toast.error("Clipboard unavailable in this browser");
   }
@@ -181,13 +181,13 @@ export function ResultsView({ config, results, verdict, running }: ResultsViewPr
         ) : (
           <>
             <p className="text-sm text-muted-foreground">
-              No results yet. Configure a target on the left — or just hit{" "}
+              Configure a target on the left, or hit{" "}
               <span className="font-mono text-foreground">Run burst</span> to test the built-in
               vulnerable checkout demo.
             </p>
             <p className="max-w-md text-xs leading-relaxed text-muted-foreground/80">
-              Tip: run it once against the vulnerable demo, then flip the demo toggle to
-              “Protected” and run again to see what a race-safe endpoint looks like.
+              Run it against the vulnerable demo, switch the toggle to Protected, and run again to
+              compare.
             </p>
           </>
         )}
@@ -264,7 +264,7 @@ export function ResultsView({ config, results, verdict, running }: ResultsViewPr
       <Card className="border-border bg-card/60">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <ListChecks className="size-4 text-primary" /> Plain-English analysis
+            <ListChecks className="size-4 text-primary" /> Analysis
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
@@ -287,7 +287,7 @@ export function ResultsView({ config, results, verdict, running }: ResultsViewPr
             <ShieldQuestion className="size-4 text-primary" /> How to fix it
           </CardTitle>
           <p className="text-xs text-muted-foreground">
-            Copyable patterns that make the write path safe against concurrent duplicates.
+            Patterns that make the write path safe against concurrent duplicates.
           </p>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
